@@ -1,0 +1,1 @@
+/* Class to abstract an algorithm. User sees only this class. The ultimate API*/

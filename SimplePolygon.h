@@ -1,0 +1,2 @@
+/* This is going to be the highest class that abstracts a data structure.
+It will act as a wrapper around the DCEL.*/

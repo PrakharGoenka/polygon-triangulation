@@ -1,0 +1,1 @@
+/* Abstracts a point in 2-D space */
