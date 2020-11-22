@@ -1,18 +1,22 @@
 #ifndef FACERECORD_H
 #define FACERECORD_H
 
-#include "EdgeRecord.h"
 
 class FaceRecord {
 public:
-    EdgeRecord inner_component;
-    EdgeRecord outer_component;
+    int index;
+    int inner_component;
+    int outer_component;
 
-    void updateInnerComponent(EdgeRecord edge) {
+    FaceRecord(int i) {
+        index = i;
+    }
+
+    void updateInnerComponent(int edge) {
         inner_component = edge;
     }
 
-    void updateOuterComponent(EdgeRecord edge) {
+    void updateOuterComponent(int edge) {
         outer_component = edge;
     }
 };

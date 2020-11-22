@@ -1,35 +1,38 @@
 #ifndef EDGERECORD_H
 #define EDGERECORD_H
 
-#include "VertexRecord.h"
-#include "FaceRecord.h"
 
 class EdgeRecord {
 public:
-	VertexRecord origin;
-	FaceRecord incident_face;
-	EdgeRecord* twin;
-	EdgeRecord* next;
-	EdgeRecord* previous;
+    int index;
+	int origin;
+	int incident_face;
+	int twin;
+	int next;
+	int previous;
 
-	void addOrigin(VertexRecord& v) {
+    EdgeRecord(int i) {
+        index = i;
+    }
+
+	void addOrigin(int v) {
 		origin = v;
 	}
 
-	void updateFace(FaceRecord f) {
+	void updateFace(int f) {
 		incident_face = f;
 	}
 
-	void updateTwin(EdgeRecord& t) {
-		twin = &t;
+	void updateTwin(int t) {
+		twin = t;
 	}
 
-	void updateNext(EdgeRecord& n) {
-		twin = &n;
+	void updateNext(int n) {
+		next = n;
 	}
 
-	void updatePrevious(EdgeRecord& p) {
-		twin = &p;
+	void updatePrevious(int p) {
+		previous = p;
 	}
 };
 

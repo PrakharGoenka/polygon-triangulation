@@ -3,18 +3,23 @@
 
 #include <bits/stdc++.h>
 #include "Point.h"
-#include "EdgeRecord.h"
+
 
 class VertexRecord {
 public:
-   Point coordinates;
-   EdgeRecord incident_edge;
+   int index;
+   Point vertex;
+   int incident_edge;
 
-   void updateCoordinates(pair <double, double> point_coordinates) {
-       coordinates = Point(point_coordinates);
+   VertexRecord(int i) {
+       index = i;
    }
 
-   void updateIncidentEdge(EdgeRecord edge) {
+   void updateCoordinates(pair <double, double> coordinates) {
+       vertex = Point(coordinates);
+   }
+
+   void updateIncidentEdge(int edge) {
 	   incident_edge = edge;
    }
 };
