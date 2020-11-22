@@ -11,6 +11,9 @@ class Point {
   public:
   pair <double, double> coordinates;
 
+  Point() {
+    coordinates = make_pair(0, 0);
+  }
   /*! Constructor to initialize the Point object.
   * \param c - A pair of doubles. It stores the coordinates of the point. 
   */
