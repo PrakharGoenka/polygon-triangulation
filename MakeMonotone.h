@@ -1,10 +1,15 @@
+/* Class to abstract an algorithm. 
+Operates on an object of SimplePolygon, by calling the methods provided by SimplePolygon.
+*/
+
+#ifndef MAKEMONOTONE_H
+#define MAKEMONOTONE_H
+
 #include<bits/stdc++.h>
 #include "Point.h"
 #include "SimplePolygon.h"
 using namespace std;
-/* Class to abstract an algorithm. 
-Operates on an object of SimplePolygon, by calling the methods provided by SimplePolygon.
-*/
+
 class MakeMonotone {
     private:
 
@@ -112,3 +117,5 @@ class MakeMonotone {
         }
     }
 }
+
+#endif /*MAKEMONOTONE_H*/

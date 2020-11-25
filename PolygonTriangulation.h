@@ -16,7 +16,8 @@ public:
     {
         //create a simple polygon and call make monotone
         DCEL polygon(points);
-        MakeMonotone(polygon);
+        MakeMonotone m(polygon);
+        polygon = m.getMonotonePolygons();
 
         //work on the faces of the polygon
         for (auto face : polygon.getFaces())
