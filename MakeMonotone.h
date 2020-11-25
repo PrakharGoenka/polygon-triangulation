@@ -1,21 +1,22 @@
-/* Class to abstract an algorithm. 
-Operates on an object of SimplePolygon, by calling the methods provided by SimplePolygon.
-*/
-
 #include<bits/stdc++.h>
 #include "Point.h"
 #include "SimplePolygon.h"
 using namespace std;
 
+/* Class to abstract an algorithm. 
+Operates on an object of SimplePolygon, by calling the methods provided by SimplePolygon.
+*/
 class MakeMonotone {
-    SimplePolygon SP;
+    static SimplePolygon SP;
     Point cur;
 
 public:
+    /*! Constructor for the Algorithm class */
     MakeMonotone(SimplePolygon SP){
         this->SP = SP;
     }
 
+    /*! Method to get a simple polygon consisting of monotone pieces*/
     SimplePolygon getMonotonePolygons(){
         vector<int> sortedPoints = SP.getSortedPoints();
 
@@ -40,14 +41,15 @@ public:
     }
 
 private:
+    /*! Check orientation of three points */
     double orientation(Point p1, Point p2, Point p3)
     {
         return ((p2.coordinates.second - p1.coordinates.second) * (p3.coordinates.first - p2.coordinates.first) - 
             (p2.coordinates.first - p1.coordinates.first) * (p3.coordinates.second - p2.coordinates.second));
     }
 
-
-    struct compare = [SP](int const& e1, int const& e2)
+    /*! Custom comparator function */
+    struct compare [SP](int const& e1, int const& e2)
     {
         pair<Point,Point> e1p = SP.getEdgeVertices(e1);
         pair<Point,Point> e2p = SP.getEdgeVertices(e2);
@@ -59,6 +61,7 @@ private:
 
     map<int, int, compare> status;
     
+    /*! Method to find first left edge of a polygon */
     int findFirstLeftEdge(int vertex){
         this->cur = SP.getVertexCoordinates(vertex);
         auto it = status.lower_bound(vertex);
@@ -69,6 +72,7 @@ private:
         status.insert(make_pair(SP.getNextEdge(vertex), vertex));
     }
 
+    /*! Method to handle a simple vertex */
     void handleEndVertex(int vertex){
         if(SP.checkEventType(status[SP.getPrevEdge(vertex)]) == 4){
             SP.insertDiagonal(vertex, status[SP.getPrevEdge(vertex)]);
@@ -76,6 +80,7 @@ private:
         status.erase(SP.getPrevEdge(vertex));
     }
 
+    /*! Method to handle split vertex */
     void handleSplitVertex(int vertex){
         int e = findFirstLeftEdge(vertex);
         SP.insertDiagonal(vertex, status[e]);
@@ -84,6 +89,7 @@ private:
         status[SP.getNextEdge(vertex)] = vertex;
     }
 
+    /*! Method to handle merge vertex*/
     void handleMergeVertex(int vertex){
         if(SP.checkEventType(status[SP.getPrevEdge(vertex)]) == 4){
             SP.insertDiagonal(vertex, status[SP.getPrevEdge(vertex)]);
@@ -98,6 +104,7 @@ private:
 
     }
 
+    /*! Method to handle Regular Vertex*/ 
     void handleRegularVertex(int vertex){
         if(SP.checkIfInteriorAtLeft(vertex)){
             int e = findFirstLeftEdge(vertex);

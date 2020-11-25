@@ -2,7 +2,7 @@
 #define SIMPLEPOLYGON_H
 
 #include <bits/stdc++.h>
-#include <DCEL.h>
+#include "DCEL.h"
 
 class SimplePolygon {
 public:
@@ -84,6 +84,10 @@ public:
 
     pair<int, int> getEdgeVertices(int edge) {
         return dcel.getEdgeVertics(edge);
+    }
+
+    DCEL getDCEL() {
+        return dcel;
     }
 };
 

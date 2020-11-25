@@ -1,6 +1,5 @@
 #include <bits/stdc++.h>
 
-#include "Point.h"
 #include "SimplePolygon.h"
 #include "DCEL.h"
 #include "MakeMonotone.h"
@@ -26,18 +25,18 @@ public:
         for (auto face : polygon.getFaces())
         {
             // Each face is a y-monotone polygon
-            triangulateMonotone(&face, &polygon); //Linear in the size of the polygon
+            triangulateMonotone(face, polygon.getDCEL()); //Linear in the size of the polygon
         }
 
         return polygon;
     }
 
 private:
-    static vector<Point> mergeSorted(vector<Point> arr1, vector<Point> arr2)
+    static vector<int> mergeSorted(vector<int> arr1, vector<int> arr2)
     {
         int n1 = arr1.size(), n2 = arr2.size();
         int i = 0, j = 0;
-        vector<Point> res;
+        vector<int> res;
         while (i < n1 && j < n2)
         {
             if (arr1[i] < arr2[j])
@@ -53,46 +52,43 @@ private:
         return res;
     }
 
-    static void triangulateMonotone(DCEL::Face face, DCEL dcel)
+    static void triangulateMonotone(int face, DCEL dcel)
     {
-        auto start = *min_element(face.getVertices().begin(), face.getVertices().end());
-        auto end = *max_element(face.getVertices().begin(), face.getVertices().end());
+        int start = *min_element(dcel.getBoundingVertices(face).begin(), dcel.getBoundingVertices(face).end());
+        int end = *max_element(dcel.getBoundingVertices(face).begin(), dcel.getBoundingVertices(face).end());
 
-        auto curr = face.getEdgeIterator();
-        while (curr.origin() != start)
-            curr = curr.next();
-
-        vector<Point> downChain{start};
-        vector<Point> upChain;
-
-        while (curr.end() != end)
+        vector<int> edges = dcel.getBoundingEdges(face);
+        vector<int> down_chain{start};
+        vector<int> up_chain;
+        auto curr = edges.begin();
+        while (*curr != end)
         {
-            downChain.push_back(curr.end());
-            curr = curr.next();
+            down_chain.push_back(*curr);
+            ++curr;
         }
-        while (curr.origin() != start)
+        while (curr != edges.end())
         {
-            upChain.push_back(curr.end());
-            curr = curr.next();
+            up_chain.push_back(*curr);
+            ++curr;
         }
-        reverse(upChain.begin(), upChain.end());
-        unordered_set<Point> downSet(downChain.begin(), downChain.end());
-        vector<Point> mergedList = mergeSorted(upChain, downChain);
+        reverse(up_chain.begin(), up_chain.end());
+        unordered_set<int> down_set(down_chain.begin(), down_chain.end());
+        vector<int> merged_list = mergeSorted(up_chain, down_chain);
 
-        stack<Point> workstack;
-        workstack.push(mergeSorted[0]);
-        workstack.push(mergeSorted[1]);
+        stack<int> workstack;
+        workstack.push(merged_list[0]);
+        workstack.push(merged_list[1]);
 
-        for (auto itr = mergeSorted.begin() + 2, itr != mergeSorted.end() - 1; ++itr)
+        for (auto itr = merged_list.begin() + 2; itr != merged_list.end() - 1; ++itr)
         {
-            if ((downSet.find(*itr) != downSet.end()) == (downSet.find(workstack.top()) != downSet.end()))
+            if ((down_set.find(*itr) != down_set.end()) == (down_set.find(workstack.top()) != down_set.end()))
             {
                 //consecutive points lie on the same chain
                 auto last = workstack.top();
                 workstack.pop();
-                while (dcel.checkInsideFace(workstack.top(), *itr, face))
+                while (dcel.diagonalIsValid(workstack.top(), *itr))
                 {
-                    dcel.addEdge(workstack.top(), *itr);
+                    dcel.insertDiagonal(workstack.top(), *itr);
                     last = workstack.top();
                     workstack.pop();
                 }
@@ -109,7 +105,7 @@ private:
                     workstack.pop();
                     if (!workstack.empty())
                     {
-                        dcel.addEdge(tp, *itr);
+                        dcel.insertDiagonal(tp, *itr);
                     }
                 }
                 workstack.push(last);
@@ -128,9 +124,9 @@ private:
                 workstack.pop();
                 if (!workstack.empty())
                 {
-                    dcel.addEdge(tp, *itr);
+                    dcel.insertDiagonal(tp, *merged_list.rbegin());
                 }
             }
         }
     }
-}
+};
