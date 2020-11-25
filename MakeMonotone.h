@@ -1,5 +1,6 @@
 #include<bits/stdc++.h>
 #include "Point.h"
+#include "SimplePolygon.h"
 using namespace std;
 /* Class to abstract an algorithm. 
 Operates on an object of SimplePolygon, by calling the methods provided by SimplePolygon.
@@ -7,103 +8,107 @@ Operates on an object of SimplePolygon, by calling the methods provided by Simpl
 class MakeMonotone {
     private:
 
-    //todo -> Might have to order p1 and p2
-    struct Key{
-        Point p1;
-        Point p2;
-        int index;
+    SimplePolygon SP;
+    Point cur;
 
-        double orientation(Point p1, Point p2, Point p3)
-        {
-            return ((p2.coordinates.second - p1.coordinates.second) * (p3.coordinates.first - p2.coordinates.first) - 
-                (p2.coordinates.first - p1.coordinates.first) * (p3.coordinates.second - p2.coordinates.second));
-        }
+    MakeMonotone(SimplePolygon SP){
+        this->SP = SP;
+    }
 
-        bool operator<(const Key& k)
-        {
-            double o1 = orientation(k.p1, k.p2, this->p1);
-            double o2 = orientation(k.p1, k.p2, this->p2);
-            double o3 = orientation(this->p1, this->p2, k.p1);
-            return (o1*o2>0)?(o1>0):(o3<=0);
-        }
+    double orientation(Point p1, Point p2, Point p3)
+    {
+        return ((p2.coordinates.second - p1.coordinates.second) * (p3.coordinates.first - p2.coordinates.first) - 
+            (p2.coordinates.first - p1.coordinates.first) * (p3.coordinates.second - p2.coordinates.second));
+    }
+
+    auto compare = [this->SP, this->cur] (int const& e1, int const& e2) -> bool
+    {
+        pair<Point,Point> e1p = (e1!=-1)?SP.getEdgeVertices(e1):make_pair(cur,cur);
+        pair<Point,Point> e2p = (e2!=-1)?SP.getEdgeVertices(e2):make_pair(cur,cur);
+        double o1 = orientation(e1p.first, e1p.second, e2p.first);
+        double o2 = orientation(e1p.first, e1p.second, e2p.second);
+        double o3 = orientation(e2p.first, e2p.second, e1p.first);
+        return (o1*o2>0)?(o1>0):(o3<=0);
     };
 
-       
-    map<Key,int> status;
+    map<int, int, compare> status;
     
-
-    void handleStartVertex(int index, SimplePolygon SP){
-        status.insert(make_pair(SP.getNextEdge(index), index))
+    int findFirstLeftEdge(int vertex){
+        this->cur = SP.getVertexCoordinates(vertex);
+        
     }
 
-    void handleEndVertex(int index, SimplePolygon SP){
-        if(SP.checkEventType(status[SP.getPrevEdge(index)]) == 4){
-            SP.insert_diagonal(index, status[SP.getPrevEdge(index)]);
+    void handleStartVertex(int vertex){
+        status.insert(make_pair(SP.getNextEdge(vertex), vertex));
+    }
+
+    void handleEndVertex(int vertex){
+        if(SP.checkEventType(status[SP.getPrevEdge(vertex)]) == 4){
+            SP.insertDiagonal(vertex, status[SP.getPrevEdge(vertex)]);
         }
-        status.erase(SP.getPrevEdge(index));
+        status.erase(SP.getPrevEdge(vertex));
     }
 
-    void handleSplitVertex(int index, SimplePolygon SP){
-        int e = status.findFirstLeftEdge(index);
-        SP.insert_diagonal(index, status[e]);
-        status[e] = index;
+    void handleSplitVertex(int vertex){
+        int e = findFirstLeftEdge(vertex);
+        SP.insertDiagonal(vertex, status[e]);
+        status[e] = vertex;
 
-        status[SP.getNextEdge(index)] = index;
+        status[SP.getNextEdge(vertex)] = vertex;
     }
 
-    void handleMergeVertex(int index, SimplePolygon SP){
-        if(SP.checkEventType(status[SP.getPrevEdge(index)]) == 4){
-            SP.insert_diagonal(index, status[SP.getPrevEdge(index)]);
+    void handleMergeVertex(int vertex){
+        if(SP.checkEventType(status[SP.getPrevEdge(vertex)]) == 4){
+            SP.insertDiagonal(vertex, status[SP.getPrevEdge(vertex)]);
         }
-        status.erase(SP.getPrevEdge(index));
+        status.erase(SP.getPrevEdge(vertex));
 
-        int e = status.findFirstLeftEdge(index);
+        int e = findFirstLeftEdge(vertex);
         if(SP.checkEventType(status[e]) == 4){
-            SP.insert_diagonal(index, status[e]);
+            SP.insertDiagonal(vertex, status[e]);
         }
-        status[e] = index;
+        status[e] = vertex;
 
     }
 
-    void handleRegularVertex(int index, SimplePolygon SP){
-        if(status.checkInteriorAtLeft(index)){
-            int e = status.findFirstLeftEdge(index);
+    void handleRegularVertex(int vertex){
+        if(SP.checkIfInteriorAtLeft(vertex)){
+            int e = findFirstLeftEdge(vertex);
             if(SP.checkEventType(status[e]) == 4){
-                SP.insert_diagonal(index, status[e]);
+                SP.insertDiagonal(vertex, status[e]);
             }
-            status[e] = index;
+            status[e] = vertex;
         }
         else{
-            if(SP.checkEventType(status[SP.getPrevEdge(index)]) == 4){
-                SP.insert_diagonal(index, status[SP.getPrevEdge(index)]);
+            if(SP.checkEventType(status[SP.getPrevEdge(vertex)]) == 4){
+                SP.insertDiagonal(vertex, status[SP.getPrevEdge(vertex)]);
             }
-            status.erase(SP.getPrevEdge(index));
-            status[SP.getNextEdge(index)] = index;
+            status.erase(SP.getPrevEdge(vertex));
+            status[SP.getNextEdge(vertex)] = vertex;
         }
     }
     public:
 
-    void getMonotonePolygons(SimplePolygon SP){
+    SimplePolygon getMonotonePolygons(){
         vector<int> sortedPoints = SP.getSortedPoints();
 
-        for(int index: sortedPoints){
-            int eventType = SP.checkEventType(index);
+        for(int vertex: sortedPoints){
+            int eventType = SP.checkEventType(vertex);
             if(eventType == 1){
-                handleStartVertex(index, SP);
+                handleStartVertex(vertex);
             }
             else if(eventType == 2){
-                handleEndVertex(index, SP);
+                handleEndVertex(vertex);
             }
             else if(eventType == 3){
-                handleSplitVertex(index, SP);
+                handleSplitVertex(vertex);
             }
             else if(eventType == 4){
-                handleMergeVertex(index, SP);
+                handleMergeVertex(vertex);
             }
             else{
-                handleRegularVertex(index, SP);
+                handleRegularVertex(vertex);
             }
         }
     }
-
 }
