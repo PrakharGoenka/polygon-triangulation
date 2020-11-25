@@ -2,9 +2,6 @@
 Operates on an object of SimplePolygon, by calling the methods provided by SimplePolygon.
 */
 
-#ifndef MAKEMONOTONE_H
-#define MAKEMONOTONE_H
-
 #include<bits/stdc++.h>
 #include "Point.h"
 #include "SimplePolygon.h"
@@ -49,10 +46,11 @@ private:
             (p2.coordinates.first - p1.coordinates.first) * (p3.coordinates.second - p2.coordinates.second));
     }
 
-    auto compare = [this->SP, this->cur] (int const& e1, int const& e2) -> bool
+
+    struct compare = [SP](int const& e1, int const& e2)
     {
-        pair<Point,Point> e1p = (e1!=-1)?SP.getEdgeVertices(e1):make_pair(cur,cur);
-        pair<Point,Point> e2p = (e2!=-1)?SP.getEdgeVertices(e2):make_pair(cur,cur);
+        pair<Point,Point> e1p = SP.getEdgeVertices(e1);
+        pair<Point,Point> e2p = SP.getEdgeVertices(e2);
         double o1 = orientation(e1p.first, e1p.second, e2p.first);
         double o2 = orientation(e1p.first, e1p.second, e2p.second);
         double o3 = orientation(e2p.first, e2p.second, e1p.first);
@@ -63,7 +61,8 @@ private:
     
     int findFirstLeftEdge(int vertex){
         this->cur = SP.getVertexCoordinates(vertex);
-        
+        auto it = status.lower_bound(vertex);
+        return (*it).first;
     }
 
     void handleStartVertex(int vertex){
@@ -115,6 +114,4 @@ private:
             status[SP.getNextEdge(vertex)] = vertex;
         }
     }
-}
-
-#endif /*MAKEMONOTONE_H*/
+};
