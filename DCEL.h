@@ -12,8 +12,8 @@ class DCEL {
     EdgeTable edge_table;
     FaceTable face_table;
     int OUTER_FACE;
-public:
 
+public:
     DCEL() {
         OUTER_FACE = face_table.addFaceRecord();
     }
@@ -55,9 +55,7 @@ public:
     /*Method to add a face to a DCEL.
     * Assumes that an independent face is being added
     */
-    pair <int, vector<int> > addFace(
-        vector<int> vertices
-    ) {       
+    pair <int, vector<int> > addFace(vector<int> vertices) {       
         int index = face_table.addFaceRecord();
         int face_degree = vertices.size();
 
@@ -95,6 +93,21 @@ public:
         return make_pair(index, edges);
     }
 
+
+    int getAdjacentFace(int edge) {
+        return edge_table.getFace(edge);
+    }
+
+    
+    pair<int, int> getEdgeVertics(int edge) {
+        int origin = edge_table.getOrigin(edge);
+        int destination = edge_table.getDestination(edge);
+        return make_pair(origin, destination);
+    }
+
+    pair<double, double> getVertexCoordinates(int vertex) {
+        return vertex_table.getVertexCoordinates(vertex);
+    }
 
     int getNextEdgeOfVertex(int current_edge) {
         int twin_edge = edge_table.getTwin(current_edge);

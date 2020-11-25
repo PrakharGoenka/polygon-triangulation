@@ -10,14 +10,8 @@ public:
 
     FaceRecord(int i) {
         index = i;
-    }
-
-    void updateInnerComponent(int edge) {
-        inner_component = edge;
-    }
-
-    void updateOuterComponent(int edge) {
-        outer_component = edge;
+        inner_component = -1;
+        outer_component = -1;
     }
 };
 

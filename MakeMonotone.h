@@ -11,15 +11,38 @@ Operates on an object of SimplePolygon, by calling the methods provided by Simpl
 using namespace std;
 
 class MakeMonotone {
-    private:
-
     SimplePolygon SP;
     Point cur;
 
+public:
     MakeMonotone(SimplePolygon SP){
         this->SP = SP;
     }
 
+    SimplePolygon getMonotonePolygons(){
+        vector<int> sortedPoints = SP.getSortedPoints();
+
+        for(int vertex: sortedPoints){
+            int eventType = SP.checkEventType(vertex);
+            if(eventType == 1){
+                handleStartVertex(vertex);
+            }
+            else if(eventType == 2){
+                handleEndVertex(vertex);
+            }
+            else if(eventType == 3){
+                handleSplitVertex(vertex);
+            }
+            else if(eventType == 4){
+                handleMergeVertex(vertex);
+            }
+            else{
+                handleRegularVertex(vertex);
+            }
+        }
+    }
+
+private:
     double orientation(Point p1, Point p2, Point p3)
     {
         return ((p2.coordinates.second - p1.coordinates.second) * (p3.coordinates.first - p2.coordinates.first) - 
@@ -90,30 +113,6 @@ class MakeMonotone {
             }
             status.erase(SP.getPrevEdge(vertex));
             status[SP.getNextEdge(vertex)] = vertex;
-        }
-    }
-    public:
-
-    SimplePolygon getMonotonePolygons(){
-        vector<int> sortedPoints = SP.getSortedPoints();
-
-        for(int vertex: sortedPoints){
-            int eventType = SP.checkEventType(vertex);
-            if(eventType == 1){
-                handleStartVertex(vertex);
-            }
-            else if(eventType == 2){
-                handleEndVertex(vertex);
-            }
-            else if(eventType == 3){
-                handleSplitVertex(vertex);
-            }
-            else if(eventType == 4){
-                handleMergeVertex(vertex);
-            }
-            else{
-                handleRegularVertex(vertex);
-            }
         }
     }
 }

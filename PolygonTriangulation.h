@@ -1,9 +1,5 @@
-/* Class to abstract an algorithm. User sees only this class. The ultimate API*/
+#include <bits/stdc++.h>
 
-#include <vector>
-#include <algorithm>
-#include <stack>
-#include <unordered_set>
 #include "Point.h"
 #include "SimplePolygon.h"
 #include "DCEL.h"
@@ -12,10 +8,17 @@
 class PolygonTriangulation
 {
 public:
-    static DCEL triangulate(std::vector<Point> points)
-    {
-        //create a simple polygon and call make monotone
-        DCEL polygon(points);
+    static vector<pair<pair<double, double>, pair<double, double> > > triangulate(
+        vector<pair<double, double> > point_coordinates
+    ) {
+        vector<Point> points;
+        for(pair<double, double> coordinate : point_coordinates) {
+            points.push_back(Point(coordinate));
+        }
+        SimplePolygon polygon;
+        pair<int, vector<int> > res = polygon.initialise(points);
+        int face = res.first;
+        vector<int> vertices(res.second);
         MakeMonotone m(polygon);
         polygon = m.getMonotonePolygons();
 
