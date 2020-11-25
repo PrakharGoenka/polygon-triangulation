@@ -11,12 +11,13 @@ int main(int argc, char *argv[]) {
     auto start = high_resolution_clock::now();
     vector<pair<double, double> > vertices = readInput(argc, *argv);
     auto first_lap = high_resolution_clock::now();
-    vector<pair<double, double > > output = PolygonTriangulation.triangulate(vertices);
+    vector<pair<pair<double, double>, pair<double, double> > > output = PolygonTriangulation::triangulate(vertices);
     auto second_lap = high_resolution_clock::now();
     ofstream output_file;
     output_file.open("output.txt");
     for(auto coordinates : output) {
-        cout << coordinates.first << " " << coordinates.second;
+        cout << coordinates.first.first << " " << coordinates.first.second << endl;
+        cout << coordinates.second.first << " " << coordinates.second.second << endl;
     }
     cout << "No of triangles: " << output.size() << "\n";
     auto input_time = duration_cast<microseconds>(first_lap - start);

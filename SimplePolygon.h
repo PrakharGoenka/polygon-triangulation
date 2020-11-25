@@ -89,6 +89,23 @@ public:
     DCEL getDCEL() {
         return dcel;
     }
+
+    vector<pair<pair<double, double>, pair<double, double> > > getAllEdges() {
+        vector<pair<pair<double, double>, pair<double, double> > > edges;
+        for(int face : faces) {
+            vector<int> bounding_edges = dcel.getBoundingEdges(face);
+            for(int edge : bounding_edges) {
+                auto vertices = dcel.getEdgeVertics(edge);
+                edges.push_back(
+                    make_pair(
+                        dcel.getVertexCoordinates(vertices.first),
+                        dcel.getVertexCoordinates(vertices.second)
+                    )
+                );                    
+            }
+        }
+        return edges;
+    }
 };
 
 #endif /*SIMPLEPOLYGON_H*/

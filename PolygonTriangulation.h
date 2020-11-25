@@ -4,9 +4,11 @@
 #include "DCEL.h"
 #include "MakeMonotone.h"
 
+/*! Class to abstract the PolygonTriangulation algorithm*/
 class PolygonTriangulation
 {
 public:
+    /*! Method exposed as API, to generate triangulation of points */
     static vector<pair<pair<double, double>, pair<double, double> > > triangulate(
         vector<pair<double, double> > point_coordinates
     ) {
@@ -21,17 +23,14 @@ public:
         MakeMonotone m(polygon);
         polygon = m.getMonotonePolygons();
 
-        //work on the faces of the polygon
-        for (auto face : polygon.getFaces())
-        {
-            // Each face is a y-monotone polygon
-            triangulateMonotone(face, polygon.getDCEL()); //Linear in the size of the polygon
-        }
+        vector<pair<pair<double, double>, pair<double, double> > > edges
+            = polygon.getAllEdges();
 
-        return polygon;
+        return edges;
     }
 
 private:
+    /*! Method to merge two lists of sorted vertices */
     static vector<int> mergeSorted(vector<int> arr1, vector<int> arr2)
     {
         int n1 = arr1.size(), n2 = arr2.size();
@@ -52,6 +51,7 @@ private:
         return res;
     }
 
+    /*! Helper method to triangulate a y-monotone polygon */
     static void triangulateMonotone(int face, DCEL dcel)
     {
         int start = *min_element(dcel.getBoundingVertices(face).begin(), dcel.getBoundingVertices(face).end());
