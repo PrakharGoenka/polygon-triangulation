@@ -7,6 +7,7 @@
 #include "FaceTable.h"
  
 
+/*! Class to abstract a DCEL data structure */
 class DCEL {
     VertexTable vertex_table;
     EdgeTable edge_table;
@@ -14,16 +15,17 @@ class DCEL {
     int OUTER_FACE;
 
 public:
+    /*! Constructor. Adds an unbounded face */
     DCEL() {
         OUTER_FACE = face_table.addFaceRecord();
     }
 
-
+    /*! Method to add a vertex */
     int addVertex(pair<double, double> coordinates) {
         return vertex_table.addVertexRecord(coordinates);
     }
 
-
+    /*! Method to add an edge */
     int addEdge(
         int origin,
         int destination, 
@@ -52,7 +54,7 @@ public:
     }
 
 
-    /*Method to add a face to a DCEL.
+    /*! Method to add a face to a DCEL.
     * Assumes that an independent face is being added
     */
     pair <int, vector<int> > addFace(vector<int> vertices) {       
@@ -93,28 +95,30 @@ public:
         return make_pair(index, edges);
     }
 
-
+    /*! Method to get adjacent face of half edge */
     int getAdjacentFace(int edge) {
         return edge_table.getFace(edge);
     }
 
-    
+    /*! Method to get the endpoints of a half edge */
     pair<int, int> getEdgeVertics(int edge) {
         int origin = edge_table.getOrigin(edge);
         int destination = edge_table.getDestination(edge);
         return make_pair(origin, destination);
     }
 
+    /*! Mehtod to get the coordinates of a vertex */
     pair<double, double> getVertexCoordinates(int vertex) {
         return vertex_table.getVertexCoordinates(vertex);
     }
 
+    /*! Method to get next edge adjacent to a vertex */
     int getNextEdgeOfVertex(int current_edge) {
         int twin_edge = edge_table.getTwin(current_edge);
         return edge_table.getNext(twin_edge);
     }
 
-
+    /*! Method to get the adjacent vertices */
     vector<int> getAdjacentVertices(int vertex) {
         vector<int> adjacent_vertices;
     
@@ -130,7 +134,7 @@ public:
         return adjacent_vertices;
     }
 
-
+    /*! Method to get the adjacent edges */
     vector<int> getAdjacentEdges(int vertex) {
         vector<int> adjacent_edges;
     
@@ -146,7 +150,7 @@ public:
         return adjacent_edges;
     }
 
-
+    /*! Method to get bounding vertices */
     vector<int> getBoundingVertices(int face) {
         vector<int> bounding_vertices;
 
@@ -162,7 +166,7 @@ public:
         return bounding_vertices;
     }
 
-
+    /*! Method to get Bounding Edges */
     vector<int> getBoundingEdges(int face) {
         vector<int> bounding_edges;
 
@@ -178,13 +182,13 @@ public:
         return bounding_edges;
     }
 
-
+    /*! Method to check if two line segments intersect */ 
     bool lineSegmentsIntersect(int a, int b, int c, int d) {
         //pass
         return false;
     }
 
-
+    /*! Method to get a common face between two vertices */
     int getCommonFace(int origin, int destination) {
         vector<int> adjacent_edges = getAdjacentEdges(origin);
         for(int edge : adjacent_edges) {
@@ -200,7 +204,7 @@ public:
         return -1;
     }
 
-
+    /*! Method to see if a diagonal is possible */
     bool diagonalIsValid(int origin, int destination) {
         int common_face = getCommonFace(origin, destination);
         if(common_face == -1) {
@@ -222,7 +226,7 @@ public:
         return true;
     }
 
-
+    /*! Method to insert a diagonal to the DCEL */
     pair<int, int> insertDiagonal(int origin, int destination) {
         if(!diagonalIsValid(origin, destination)) {
             return make_pair(-1, -1);
